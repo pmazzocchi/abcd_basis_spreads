@@ -1,6 +1,7 @@
 #include <calibrate.h>
 
-//Idea from IterativeBootstrap
+//Idea from IterativeBootstrap.
+
 void CalibratedModel::calibrate(
 	//std::vector<boost::shared_ptr<CalibratedModel>>& calibratedModel,
 	//std::vector<boost::shared_ptr<CalibrationData>>& calibrationData,

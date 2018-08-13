@@ -1,5 +1,7 @@
 #include <abcdglobalerror.h>
 
+//specific the function in order to use the operator
+
 AbcdGlobalError::AbcdGlobalError(std::vector<boost::shared_ptr<CalibratedModel>>& calibratedModel,
 	std::vector<boost::shared_ptr<CalibrationData>>& calibrationData)
 	:GlobalError(calibratedModel,calibrationData) {}
@@ -12,6 +14,9 @@ void AbcdGlobalError::updateGuess( Real guess) const {
 		calibratedModel_[i]->arguments_[calibrationData_[i].globalParameter()](0.0) = guess;
 	
 }
+
+// maybe not the perfect name, beacuse it loads and calibrates. Anyway, by construction
+// in claibrate if you load then calibrate, so maybe it can work
 
 void AbcdGlobalError::loadCalibrationData() const{
 
@@ -29,6 +34,6 @@ void AbcdGlobalError::error() {
 
 	for (std::vector<int>::iterator i = calibratedModel_.begin();i != calibratedModel_.end();++i)
 	{
-		error_++ = calibrationData_[i]->globalErrorWeight()*calibratedModel_[i]->value(calibratedModel_[i]->params(), calibrationData_.rateHelper());
+		error_++ = calibrationData_[i]->globalErrorWeight()*calibratedModel_[i]->value(calibratedModel_[i]->params(), calibrationData_[i].rateHelper());
 	}
 }

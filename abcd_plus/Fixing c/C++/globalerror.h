@@ -1,4 +1,7 @@
-#pragma once
+
+/*This class should be an inner class of CalibratedModel and it allows
+to manipulate the errors that comes form more than one model*/
+
 class CalibratedModel::GlobalError {
 public:
 	GlobalError(
