@@ -1,4 +1,5 @@
-#pragma once
+#include <globalerror.h>
+
 //implement GlobalError methods
 AbcdGlobalError:public GlobalError{
 public:

@@ -1,3 +1,4 @@
+#include <globalerror.h>
 
 CalibratedModel::GlobalError(std::vector<boost::shared_ptr<CalibratedModel>>& calibratedModel,
 	std::vector<boost::shared_ptr<CalibrationData>>& calibrationData)

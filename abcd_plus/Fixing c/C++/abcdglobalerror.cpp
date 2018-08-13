@@ -1,3 +1,4 @@
+#include <abcdglobalerror.h>
 
 AbcdGlobalError::AbcdGlobalError(std::vector<boost::shared_ptr<CalibratedModel>>& calibratedModel,
 	std::vector<boost::shared_ptr<CalibrationData>>& calibrationData)

@@ -1,6 +1,6 @@
-#include <ql/experimental/tenorbasis/calibarationdata.h>
+#include <abcdcalibarationdata.h>
 
-AbcdCalibrationData(const int & globalParameter;
+AbcdTenorBasis::AbcdCalibrationData(const int & globalParameter;
 					Real globalErrorWeight;
 					const std::vector<boost::shared_ptr<RateHelper> >& helpers,
 					OptimizationMethod& method,
@@ -10,7 +10,7 @@ AbcdCalibrationData(const int & globalParameter;
 :globalParameter_(globalParameter), globalErrorWeight_(globalErrorWeight)
 helpers_(helpers), method_(method), endCriteria_(endCriteria), weights_(weights), fixParameters_(fixParameters) {}
 
-const std::vector < boost::shared_ptr<RateHelper> AbcdTenorBasis::CalibrationData rateHelper() {
+const std::vector < boost::shared_ptr<RateHelper> AbcdTenorBasis::AbcdCalibrationData rateHelper() {
 	return rateHelper_;
 };
 OptimizationMethod AbcdTenorBasis::AbcdCalibrationData  method() {

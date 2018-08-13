@@ -1,10 +1,10 @@
-#include <ql/experimental/tenorbasis/abcd_plus.hpp>
+#include <calibrate.h>
 
 //Idea from IterativeBootstrap
 void CalibratedModel::calibrate(
 	//std::vector<boost::shared_ptr<CalibratedModel>>& calibratedModel,
 	//std::vector<boost::shared_ptr<CalibrationData>>& calibrationData,
-	boost::shared_ptr<GlobalError> globalError;
+	mutable boost::shared_ptr<GlobalError> globalError;
 	boost::shared_ptr<Solver1D> solver,
 	Real & accuracy,
 	Real & guess,
@@ -15,7 +15,7 @@ void CalibratedModel::calibrate(
 	//GlobalError globalError_(calibratedModel,calibrationData);
 	
 	//solve
-	solver->solve(globalError_, accuracy, guess, min, max);
+	solver->solve(*globalError, accuracy, guess, min, max);
 	//firstSolver_.solve(*errors_[i], accuracy, guess, min, max);
     }
 

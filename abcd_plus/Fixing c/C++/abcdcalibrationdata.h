@@ -1,4 +1,4 @@
-#pragma once
+#include <calibarationdata.h>
 // this object stores all the inputs for the nested calibration
 class AbcdCalibrationData:public CalibratedModel::CalibrationData {
 public:
