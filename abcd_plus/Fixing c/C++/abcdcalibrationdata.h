@@ -1,7 +1,7 @@
 #include <calibarationdata.h>
 
 /* Specific implementation of calibrationdata for the abcd
-in order to use the mthod: calibrate*/
+in order to use the method: calibrate */
 
 class AbcdCalibrationData:public CalibratedModel::CalibrationData {
 public:
