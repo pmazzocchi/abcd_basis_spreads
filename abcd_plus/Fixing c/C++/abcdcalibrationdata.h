@@ -5,7 +5,7 @@ in order to use the method: calibrate */
 
 class AbcdCalibrationData:public CalibratedModel::CalibrationData {
 public:
-	AbcdCalibrationData(const int & globalParameter;
+	AbcdCalibrationData(const std::vector<int> & globalParameter;
 					Real globalErrorWeight;
 					const std::vector<boost::shared_ptr<RateHelper> >& helpers,
 					OptimizationMethod& method,
@@ -18,14 +18,6 @@ public:
 	const EndCriteria endCriteria();
 	const std::vector<Real> weights();
 	const std::vector<bool> fixParameters();
-	const int globalParameter();
+	const int globalParameter(int innerErrorNumber);
 	Real globalErrorWeight();
-private:
-	const std::vector < boost::shared_ptr<RateHelper> rateHelper_;
-	OptimizationMethod method_;
-	const EndCriteria endCriteria_;
-	const std::vector<Real> weights_;
-	const std::vector<bool> fixParameters_;
-	const int globalParameter_;
-	Real globalErrorWeight_;
 };
