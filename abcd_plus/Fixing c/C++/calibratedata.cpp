@@ -1,15 +1,13 @@
 
 CalibrateData::CalibrateData(
-	/*std::vector<boost::shared_ptr<CalibratedModel>>& calibratedModel;
-std::vector<boost::shared_ptr<CalibrationData>>& calibrationData,*/
-boost::shared_ptr<Solver1D> & solver,
-Real & accuracy,
-Real & guess,
-Real & min,
-Real & max)
-
-	:calibratedModel_(calibratedModel), accuracy_(accuracy),
-	guess_(guess), min_(min), max_(max) {
+								/*std::vector<boost::shared_ptr<CalibratedModel>>& calibratedModel;
+							std::vector<boost::shared_ptr<CalibrationData>>& calibrationData,*/
+							boost::shared_ptr<Solver1D> & solver,
+							Real & accuracy,
+							Real & guess,
+							Real & min,
+							Real & max)
+	:solver_(solver), accuracy_(accuracy),guess_(guess), min_(min), max_(max) {
 
 	/*calibrationDataOrdering(calibrationData);
 
@@ -24,6 +22,11 @@ Real & max)
 std::vector<boost::shared_ptr<CalibrationData>> CalibrateData::calibrationData() const {
 	return calibrationData_;
 };*/
+
+boost::shared_ptr<Solver1D> solver()const {
+	return solver_;
+};
+
 Real CalibrateData::accuracy()const {
 	return accuracy_;
 };

@@ -13,11 +13,13 @@ public:
 					const std::vector<Real>& weights,
 					const std::vector<bool>& fixParameters);
 
+//methods 
 	const std::vector < boost::shared_ptr<RateHelper> rateHelper();
 	OptimizationMethod method();
 	const EndCriteria endCriteria();
 	const std::vector<Real> weights();
-	const std::vector<bool> fixParameters();
-	const int globalParameter(int innerErrorNumber);
+	const std::vector<bool> fixParameters());
+	int globalParameter(int innerErrorNumber);
+	void globalParameterOrdering(std::vector<int> globalParameter);
 	Real globalErrorWeight();
 };

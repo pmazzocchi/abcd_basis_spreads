@@ -7,7 +7,7 @@ class CalibratedModel::GlobalError {
 public:
 	GlobalError(
 		//innerErrorNumber plays it's fundamental because helps to select data according to the referred global error
-		int &innerErrorNumber,
+		int & innerErrorNumber,
 		//it needed a vector of CalibratedModel, because we are retrieving the error from more than one
 				std::vector<boost::shared_ptr<CalibratedModel>>& calibratedModel,
 		//different CalibratedModel need different calibration data
@@ -21,7 +21,6 @@ public:
 	virtual void loadCalibrationData() const = 0;
 	virtual void innerError()= 0;
 	void errorFork()const;
-	void globalParameterOrdering(std::vector<int> globalParameter);
 	void calibrationDataOrdering(std::vector<boost::shared_ptr<CalibrateData>> calibrateData);
 	std::vector<boost::shared_ptr<CalibratedModel>> calibratedModel()const;
 	std::vector<boost::shared_ptr<CalibrationData>> calibrationData()const;

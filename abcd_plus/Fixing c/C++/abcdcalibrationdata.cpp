@@ -19,25 +19,25 @@ AbcdTenorBasis::AbcdCalibrationData(std::vector<int> & globalParameter;
 
 
 
-const std::vector < boost::shared_ptr<RateHelper> AbcdTenorBasis::AbcdCalibrationData rateHelper() const{
+const std::vector < boost::shared_ptr<RateHelper>> AbcdTenorBasis::AbcdCalibrationData rateHelper(){
 	return rateHelper_;
 };
-OptimizationMethod AbcdTenorBasis::AbcdCalibrationData  method() const {
+OptimizationMethod AbcdTenorBasis::AbcdCalibrationData  method() {
 	return method_;
 };
-const EndCriteria  AbcdTenorBasis::AbcdCalibrationData  endCriteria()const {
+const EndCriteria  AbcdTenorBasis::AbcdCalibrationData  endCriteria() {
 	return endCriteria_;
 };
-const std::vector<Real>  AbcdTenorBasis::AbcdCalibrationData weights() const {
+const std::vector<Real>  AbcdTenorBasis::AbcdCalibrationData weights()  {
 	return weights_;
 };
-const std::vector<bool>  AbcdTenorBasis::AbcdCalibrationData fixParameters()const {
+const std::vector<bool>  AbcdTenorBasis::AbcdCalibrationData fixParameters() {
 return fixParameters_;
 };
-const std::vector<int> AbcdTenorBasis::AbcdCalibrationData  globalParameter(int innerErrorNumber) const {
+const std::vector<int> AbcdTenorBasis::AbcdCalibrationData  globalParameter(int innerErrorNumber)  {
 	return globalParameter_[innerErrorNumber];
 };
-Real AbcdTenorBasis::AbcdCalibrationData  globalErrorWeight() const {
+Real AbcdTenorBasis::AbcdCalibrationData  globalErrorWeight()  {
 	return globalErrorWeight_;
 };
 
@@ -52,3 +52,5 @@ void globalParameterOrdering(std::vector<int> globalParameter) {
 		globalParameter_[i] = globalParameter[j];
 		j--;
 	}
+
+}

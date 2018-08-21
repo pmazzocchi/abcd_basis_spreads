@@ -1,6 +1,6 @@
 #pragma once
 
-class CalibrateData {
+class CalibratedModel::CalibrateData {
 public:
 	CalibrateData(
 		/*std::vector<boost::shared_ptr<CalibratedModel>>& calibratedModel;
@@ -13,7 +13,8 @@ public:
 
 	/*std::vector<boost::shared_ptr<CalibratedModel>> calibratedModel()const;
 	//std::vector<boost::shared_ptr<CalibrationData>> calibrationData()const;*/
-	std::vector<boost::shared_ptr<Solver1D>> solver()const;
+	//std::vector<boost::shared_ptr<CalibrationData>>& calibrationData_;*/
+	boost::shared_ptr<Solver1D> solver()const;
 	Real accuracy()const;
 	Real guess()const;
 	Real min()const;
@@ -23,7 +24,7 @@ public:
 private:
 	/*std::vector<boost::shared_ptr<CalibratedModel>> calibratedModel_;
 	//std::vector<boost::shared_ptr<CalibrationData>>& calibrationData_;*/
-	std::vector<boost::shared_ptr<Solver1D>> solver_;
+	boost::shared_ptr<Solver1D> solver_;
 	Real accuracy_;
 	Real guess_;
 	Real min_;

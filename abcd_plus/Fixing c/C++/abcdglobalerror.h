@@ -14,6 +14,6 @@ public:
 
 	void loadCalibrationData()const;
 
-	void innerError(CalibrationData & calibrationData);
+	void innerError();
 
 }
