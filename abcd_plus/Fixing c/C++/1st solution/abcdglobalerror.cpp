@@ -16,7 +16,7 @@ void AbcdGlobalError::updateGuess( Real guess) const {
 
 	for (std::vector<int>::iterator i = calibratedModel_.begin();i != calibratedModel_.end();++i)
 	{
-		/*the calibrate method works on  arguments_, therefore it makes sense 
+		/*the calibrate method works on  arguments_, therefore it makes sense
 		to fix the global parameter with the boolean value changing it externally ( with the guess).*/
 
 		/*Mind the globalParameter: if there is just one innerErrorNumber_ it goes for loadCalibrationData and it'all okay.
@@ -24,7 +24,7 @@ void AbcdGlobalError::updateGuess( Real guess) const {
 		and the inner cycle will manage the globalParameter_[0]
 		So, based on the innerErrorNumber_ it is possible to fix for each level of error the corresponding parameter that has to be fixed*/
 		calibratedModel_[i]->arguments_[calibrationData_[i].globalParameter(this->innerErrorNumber_)](0.0) = guess;
-	
+	}
 }
 
 /*Maybe not the perfect name, because it loads and calibrates. Anyway, by construction
