@@ -21,8 +21,7 @@ AcdtTenorBasis::AcdtTenorBasis(shared_ptr<IborIndex> iborIndex,
 	generateArguments();
 }
 
-// it can't be AbcdTenorBasis child, otherwise CalibratedModel::setParams would use AbcdTenorBasis::generateArguments instead of this 
-
+//pratically the same of AbcdTenorBasis::generateArguments()
 void AcdtTenorBasis::generateArguments() {
 	std::vector<Real> x(4);
 	x[0] = arguments_[0](0.0);//a
