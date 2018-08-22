@@ -1,10 +1,5 @@
-#include <acdt.h>
-//coeff[4]-> a,t,c,d
-#pragma once
 
-
-
-AcdtTenorBasis::AcdtTenorBasis(shared_ptr<IborIndex> iborIndex,
+AcdtTenorBasis::AcdtTenorBasis(boost::shared_ptr<IborIndex> iborIndex,
 	boost::shared_ptr<IborIndex> baseIborIndex,
 	Date referenceDate,
 	bool isSimple,
@@ -25,11 +20,11 @@ AcdtTenorBasis::AcdtTenorBasis(shared_ptr<IborIndex> iborIndex,
 void AcdtTenorBasis::generateArguments() {
 	std::vector<Real> x(4);
 	x[0] = arguments_[0](0.0);//a
-    //fulfilling b with its funcitonal form. 
+							  //fulfilling b with its funcitonal form. 
 	x[1] = b(std::vector<Parameter> arguments_)
-	x[2] = arguments_[2](0.0);//c
+		x[2] = arguments_[2](0.0);//c
 	x[3] = arguments_[3](0.0);//t
-								//std::vector<Real> y = direct(x);
+							  //std::vector<Real> y = direct(x);
 	std::vector<Real> y = x;
 	if (isSimple_) {
 		basis_ = shared_ptr<AbcdMathFunction>(
@@ -57,5 +52,6 @@ void AcdtTenorBasis::generateArguments() {
 Real AcdtTenorBasis::b(std::vector<Parameter> arguments)
 {
 	Real b;
-	return b=(arguments_[0](0.0)*arguments_[2](0.0)) / (1 - arguments_[1](0.0)*arguments_[2](0.0));
+	return b = (arguments_[0](0.0)*arguments_[2](0.0)) / (1 - arguments_[1](0.0)*arguments_[2](0.0));
 };
+
