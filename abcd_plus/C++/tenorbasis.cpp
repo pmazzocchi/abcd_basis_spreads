@@ -622,7 +622,7 @@ namespace QuantLib {
 		Date referenceDate,
 		bool isSimple,
 		const std::vector<Real>& coeff)
-		: AbcdTenorBasis(iborIndex, baseIborIndex, referenceDate, isSimple, coeff) {
+		: AbcdTenorBasis(iborIndex, baseIborIndex, referenceDate, isSimple, coeffAbcd(coeff)) {
 		//std::vector<Real> y = inverse(coeff);
 		std::vector<Real> y = coeff;
 
@@ -673,6 +673,18 @@ namespace QuantLib {
 		Real b;
 		
 		return b = (arguments[0](0.0)*arguments[1](0.0)) / (1 - arguments[1](0.0)*arguments[3](0.0));
+	};
+
+	std::vector<Real> AcdtTenorBasis::coeffAbcd(std::vector<Real> coeff)
+	{
+		std::vector<Real> coeffAbcd;
+		coeffAbcd.push_back(coeff[0]);//a
+		Real Implied_b= (coeff[0] * coeff[1]) / (1 - coeff[1] * coeff[3]);//b from acdt coefficients
+		coeffAbcd.push_back(Implied_b);//implied b from acdt
+		coeffAbcd.push_back(coeff[1]);//c
+		coeffAbcd.push_back(coeff[2]);//d
+
+		return coeffAbcd;
 	};
 
 

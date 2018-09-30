@@ -345,6 +345,7 @@ namespace QuantLib {
 
 		void generateArguments();
 		Real b(std::vector<Parameter> param);
+		std::vector<Real> coeffAbcd(std::vector<Real> coeff);
 	};
 
 
