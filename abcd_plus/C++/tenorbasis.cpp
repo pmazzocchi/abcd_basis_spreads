@@ -64,7 +64,22 @@ namespace QuantLib {
 		registerWith(baseIborIndex_);
 	}
 
-	
+	Real TenorBasis::value(
+
+		const Array& params,
+		const vector<boost::shared_ptr<RateHelper> >& h) {
+
+		std::vector<boost::shared_ptr<CalibrationHelperBase> >
+			cH(h.size());
+
+		for (Size i = 0; i < h.size(); ++i) {
+			cH[i] = h[i];
+		}
+		Real value;
+		return value = CalibratedModel::value(params, cH);
+
+	}
+
 	Spread TenorBasis::value(Date d) const {
 		Time t = timeFromReference(d);
 		return value(t);
@@ -627,7 +642,7 @@ namespace QuantLib {
 		std::vector<Real> y = coeff;
 
 		arguments_[0] = ConstantParameter(y[0], NoConstraint());
-		arguments_[1] = ConstantParameter(y[1], NoConstraint()); 
+		arguments_[1] = ConstantParameter(y[1], NoConstraint());
 		arguments_[2] = ConstantParameter(y[2], NoConstraint());
 		arguments_[3] = ConstantParameter(y[3], NoConstraint()); //t_max
 		isSimple_ = isSimple;
@@ -653,7 +668,7 @@ namespace QuantLib {
 			// unaltered c[2] (the c in abcd)
 			c[3] *= tau_;
 			instBasis_ = shared_ptr<AbcdMathFunction>(new AbcdMathFunction(c));
-	
+
 		}
 		else {
 			instBasis_ = shared_ptr<AbcdMathFunction>(
@@ -671,7 +686,7 @@ namespace QuantLib {
 	Real AcdtTenorBasis::b(std::vector<Parameter> arguments)
 	{
 		Real b;
-		
+
 		return b = (arguments[0](0.0)*arguments[1](0.0)) / (1 - arguments[1](0.0)*arguments[3](0.0));
 	};
 
@@ -679,7 +694,7 @@ namespace QuantLib {
 	{
 		std::vector<Real> coeffAbcd;
 		coeffAbcd.push_back(coeff[0]);//a
-		Real Implied_b= (coeff[0] * coeff[1]) / (1 - coeff[1] * coeff[3]);//b from acdt coefficients
+		Real Implied_b = (coeff[0] * coeff[1]) / (1 - coeff[1] * coeff[3]);//b from acdt coefficients
 		coeffAbcd.push_back(Implied_b);//implied b from acdt
 		coeffAbcd.push_back(coeff[1]);//c
 		coeffAbcd.push_back(coeff[2]);//d
@@ -701,13 +716,14 @@ namespace QuantLib {
 
 	Real GlobalHelper::calibrationError()const
 	{
-		
+
 		/*it asks its calibratedModel_ to calibrate itself and then asks the error*/
 		calibratedModel_->calibrate(helpers_, *method_, endCriteria_, weights_, fixParameters_);//cambiare valori storati
-		Real value = 0.0;
-		for (Size i = 0; i<helpers_.size(); ++i) {
-			Real diff = helpers_[i]->calibrationError();
-			value += diff*diff*weights_[i];
+		//Array params=calibratedModel_->params();
+		Array values = calibratedModel_->problemValues();
+		Real value = 0;
+		for (Size i = 0; i < values.size(); ++i) {
+			value += values[i] * values[i];
 		}
 		return value;
 	};
@@ -715,100 +731,116 @@ namespace QuantLib {
 
 	//global model
 	GlobalModel::GlobalModel(Size nArguments,
-							const Real& coeff,
-							const std::vector<int>& position,
-							const int& innerErrorNumber,
-							boost::shared_ptr<OptimizationMethod>& method,//not sure that this objects should be stored
-							const EndCriteria& endCriteria,
-							const std::vector<Real>& weights,
-							const std::vector<bool>& fixParameters)
-		: CalibratedModel(nArguments),position_(position),
+		const Real& coeff,
+		const std::vector<boost::shared_ptr<GlobalHelper>> & helpers,
+		const std::vector<int>& position,
+		const int& innerErrorNumber,
+		boost::shared_ptr<OptimizationMethod>& method,//not sure that this objects should be stored
+		const EndCriteria& endCriteria,
+		const std::vector<Real>& weights,
+		const std::vector<bool>& fixParameters)
+		: CalibratedModel(nArguments), helpers_(helpers), position_(position),
 		innerErrorNumber_(innerErrorNumber), method_(method),
-		endCriteria_(endCriteria),weights_(weights), fixParameters_(fixParameters){
-			Real y = coeff;
-			arguments_[0] = ConstantParameter(y, NoConstraint());
-			//generateArguments();
-		}
+		endCriteria_(endCriteria), weights_(weights), fixParameters_(fixParameters) {
+		Real y = coeff;
+		arguments_[0] = ConstantParameter(y, NoConstraint());
+		//generateArguments();
+	}
 
-void GlobalModel::generateArguments() {
+	void GlobalModel::generateArguments() {
 
-	Real x;
-	x= arguments_[0](0.0);
-	int index = position_.size() - innerErrorNumber_;// for understanding which error is currently considered
-	
-	//if there is only one global error
-	if (innerErrorNumber_ = 1) {
-		for (Size i = 0; i<helpers_.size(); ++i) {
-			Array params= helpers_[i]->calibratedModel_->params(); //get parameters
+		Real x;
+		x = arguments_[0](0.0);
+
+		int index = position_.size() - innerErrorNumber_;// for understanding which error is currently considered
+
+		//set the params in the globalhelpers->calibratedModel!
+
+		for (Size i = 0; i < helpers_.size(); ++i) {
+			Array params = helpers_[i]->calibratedModel_->params(); //get parameters
 			params[position_[index]] = x; // set parameters of interest
 			helpers_[i]->calibratedModel_->setParams(params);// change model parameters
 		}
+
+
+		//If there are more than one global error-> nested calibration in nested calibration
+		if (innerErrorNumber_ > 1)
+		{
+
+			//diminishing the error indicator
+			innerErrorNumber_--;
+			//update the index
+			index = position_.size() - innerErrorNumber_;
+			//Size size = 1;
+			//set Argument of interest with the guess implied in calibratedModel_->params() with the coherent position index
+			Array params = helpers_[0]->calibratedModel_->params(); //get parameters
+			arguments_[0].setParam(0, params[position_[index]]);  // set parameters of interest
+			//x = params[position_[index]]; // set parameters of interest
+			//Real coeff = x;
+			//Therefore, create an inner model
+			/*GlobalModel globalModel(size,
+				coeff,
+				helpers_,
+				position_,
+				innerErrorNumber_,
+				method_,
+				endCriteria_,
+				weights_,
+				fixParameters_);
+			globalModel.calibrate(helpers_,
+				*method_,
+				endCriteria_,
+				weights_,
+				fixParameters_);*/
+			
+			/*this->calibrate(helpers_,
+				*method_,
+				endCriteria_,
+				weights_,
+				fixParameters_);*/
+			this->calibrate();
+			//in order to cycle once more
+			innerErrorNumber_++;
+			arguments_[0].setParam(0, x); 
+			//index = position_.size() + innerErrorNumber_;
+
+		}
+
+
+	};
+
+	void GlobalModel::calibrate(
+		const std::vector<boost::shared_ptr<GlobalHelper>>& helpers,
+		OptimizationMethod& method,
+		const EndCriteria& endCriteria,
+		const std::vector<Real>& weights,
+		const std::vector<bool>& fixParameters) {
+
+		std::vector<boost::shared_ptr<CalibrationHelperBase>> cHelpers(helpers.size());
+
+		for (Size i = 0; i < helpers.size(); ++i) {
+			cHelpers[i] = helpers[i];
+		}
+		CalibratedModel::calibrate(cHelpers, method, endCriteria,
+			this->constraint(), weights, fixParameters);
+	};
+
+	void GlobalModel::calibrate() {
+
+		std::vector<boost::shared_ptr<CalibrationHelperBase>> cHelpers(helpers_.size());
+
+		for (Size i = 0; i < helpers_.size(); ++i) {
+			cHelpers[i] = helpers_[i];
+		}
+		CalibratedModel::calibrate(cHelpers, *method_, endCriteria_,
+			this->constraint(), weights_, fixParameters_);
+	};
+
+
+	Constraint GlobalModel::constraint() const {
+		return NoConstraint();
 	}
 
-	//If there are more than one global error-> nested calibration in nested calibration
-	else
-	{
-		//diminishing the error indicator
-		innerErrorNumber_--;
-		Size size = 1;
-		/*comunicate the position of the global parameter. Given that the size of position equals the number of inner error ( at the beginning),
-		considering that the user passes before the outer parameter and then the other, if for instance there are 2 error then postion_.size()=2
-		if we are considering the outer global parameter the  index is 2-2 , it is correct because takes position_[0], while with the second takes
-		2-1 ( because innerErrorNumber_ has been diminished)  and therefore correctly it takes postion_[1]*/
-		index = position_.size() - innerErrorNumber_;
-		/*takes the guess from its value in the first model. It's right because in order to global calibrate this value has been fixed
-		so we are using the original guess ( set by user)*/
-		Array params = helpers_[0]->calibratedModel_->params(); //get parameters
-		x=params[position_[index]]; // set parameters of interest
-		Real coeff = x;
-	    //Therefore, create an inner model
-		GlobalModel globalModel(size,
-			coeff,
-			position_,
-			innerErrorNumber_, 
-			method_,
-			endCriteria_,
-			weights_, 
-			fixParameters_);
-	
-		/*calibrate the inner model, reusing the calibrate of the outer global calibration
-		the assumption here is that the method and its friends are not depending on the error
-		It should be okay reuse h_ because they are all pointer therefore we are always change all the inputs also out of
-		the inner calibraton (I think)*/
-
-		globalModel.calibrate(helpers_,
-			*method_,
-			endCriteria_,
-			weights_,
-			fixParameters_);
-
-		//in order to cycle once more
-		index = position_.size() + innerErrorNumber_;
-
-	}
-
-
-};
-
-void GlobalModel::calibrate(
-	const std::vector<boost::shared_ptr<GlobalHelper>>& helpers,
-	OptimizationMethod& method,
-	const EndCriteria& endCriteria,
-	const std::vector<Real>& weights,
-	const std::vector<bool>& fixParameters) {
-
-	std::vector<boost::shared_ptr<CalibrationHelperBase>> cHelpers(helpers.size());
-
-	for (Size i = 0; i < helpers.size(); ++i) {
-		cHelpers[i] = helpers[i];
-	}
-	CalibratedModel::calibrate(cHelpers, method, endCriteria,
-		constraint(), weights, fixParameters);
-};
-
-Constraint GlobalModel::constraint() const {
-	return NoConstraint();
-}
 
 }
 

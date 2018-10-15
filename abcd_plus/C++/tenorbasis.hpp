@@ -51,6 +51,9 @@ namespace QuantLib {
 		//! tenor (simple) basis as function of Date
 		Spread value(Date d) const;
 		//! tenor (simple) basis as function of Time
+		Real value(const Array& params,
+			const std::vector<boost::shared_ptr<RateHelper>>&h);
+		//! tenor (simple) basis as function of Time
 		virtual Spread value(Time t) const = 0;
 		//! tenor (continuous) basis as function of Date
 		Spread instBasisValue(Date d) const;
@@ -352,8 +355,7 @@ namespace QuantLib {
 	class GlobalHelper : public CalibrationHelperBase {
 
 	public:
-		GlobalHelper(const boost::shared_ptr<TenorBasis>& calibratedModel,//real nature
-																		  //storage
+		GlobalHelper(const boost::shared_ptr<TenorBasis>& calibratedModel,
 			const std::vector<boost::shared_ptr<RateHelper>> & helpers,
 			boost::shared_ptr<OptimizationMethod> & method,
 			const EndCriteria  & endCriteria,
@@ -381,6 +383,7 @@ namespace QuantLib {
 	public:
 		GlobalModel(Size nArguments,
 			const Real& coeff,
+			const std::vector<boost::shared_ptr<GlobalHelper>> & helpers,
 			const std::vector<int>& position,
 			const int& innerErrorNumber,
 			boost::shared_ptr<OptimizationMethod> & method,
@@ -397,6 +400,7 @@ namespace QuantLib {
 			const EndCriteria& endCriteria,
 			const std::vector<Real>& weights,
 			const std::vector<bool>& fixParameters);
+		void calibrate();
 
 	protected:
 
