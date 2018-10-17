@@ -364,6 +364,11 @@ namespace QuantLib {
 
 		Real calibrationError()const;//real nature
 		boost::shared_ptr<TenorBasis> calibratedModel_;
+		std::vector<boost::shared_ptr<RateHelper>>& getHelpers();
+		boost::shared_ptr<OptimizationMethod>& getMethod();
+		EndCriteria& getEndCriteria();
+		std::vector<Real>& getWeights();
+		std::vector<bool>& getFixParameters();
 	protected:
 
 		std::vector<boost::shared_ptr<RateHelper>> helpers_;
@@ -414,6 +419,27 @@ namespace QuantLib {
 
 	};
 
+	class GlobalError {
+	public:
+		GlobalError(const std::vector<boost::shared_ptr<GlobalHelper>> & helpers,
+			const std::vector<int>& position,
+			const int& innerErrorNumber,
+			const Real& accuracy,
+			const Real& min,
+			const Real& max);
+
+		Real operator()(Real guess)const;
+		void value(void)const;
+	private:
+		std::vector<boost::shared_ptr<GlobalHelper>> helpers_;
+		Brent firstSolver_;
+		mutable int innerErrorNumber_;
+		std::vector<int> position_;
+		Real accuracy_;
+		Real min_;
+		Real max_;
+		mutable Real value_;
+	};
 }
 
 #endif

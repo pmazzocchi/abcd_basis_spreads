@@ -728,6 +728,21 @@ namespace QuantLib {
 		return value;
 	};
 
+	std::vector<boost::shared_ptr<RateHelper>>& GlobalHelper::getHelpers() {
+		return helpers_;
+	};
+	boost::shared_ptr<OptimizationMethod>& GlobalHelper::getMethod() {
+		return method_;
+	};
+	EndCriteria& GlobalHelper::getEndCriteria() {
+		return endCriteria_;
+	};
+	std::vector<Real>& GlobalHelper::getWeights() {
+		return weights_;
+	};
+	std::vector<bool>& GlobalHelper::getFixParameters() {
+		return fixParameters_;
+	};
 
 	//global model
 	GlobalModel::GlobalModel(Size nArguments,
@@ -792,16 +807,16 @@ namespace QuantLib {
 				endCriteria_,
 				weights_,
 				fixParameters_);*/
-			
-			/*this->calibrate(helpers_,
-				*method_,
-				endCriteria_,
-				weights_,
-				fixParameters_);*/
+
+				/*this->calibrate(helpers_,
+					*method_,
+					endCriteria_,
+					weights_,
+					fixParameters_);*/
 			this->calibrate();
 			//in order to cycle once more
 			innerErrorNumber_++;
-			arguments_[0].setParam(0, x); 
+			arguments_[0].setParam(0, x);
 			//index = position_.size() + innerErrorNumber_;
 
 		}
@@ -841,7 +856,57 @@ namespace QuantLib {
 		return NoConstraint();
 	}
 
+	GlobalError::GlobalError(const std::vector<boost::shared_ptr<GlobalHelper>> & helpers,
+		const std::vector<int>& position,
+		const int& innerErrorNumber,
+		const Real& accuracy,
+		const Real& min,
+		const Real& max) :helpers_(helpers), position_(position), innerErrorNumber_(innerErrorNumber), accuracy_(accuracy), min_(min), max_(max) {};
 
+
+	Real GlobalError::operator()(Real guess) const {
+
+		// for understanding which error is currently considered
+		int index = position_.size() - innerErrorNumber_;
+
+		//set guess in globalhelpers->calibratedModel!
+		Array params;
+		for (Size i = 0; i < helpers_.size(); ++i) {
+			params = helpers_[i]->calibratedModel_->params(); //get parameters
+			params[position_[index]] = guess; // set parameters of interest
+			helpers_[i]->calibratedModel_->setParams(params);// change model parameters
+		}
+
+		if (innerErrorNumber_ > 1) {
+			innerErrorNumber_--;
+			index = position_.size() - innerErrorNumber_;
+			guess = params[position_[index]];
+			Brent solver;
+			solver.solve(*this, accuracy_, guess, min_, max_);
+		}
+		else
+		{
+			//it asks its calibratedModel_
+			for (Size i = 0; i < helpers_.size(); ++i) {
+				helpers_[i]->calibratedModel_->calibrate(helpers_[i]->getHelpers(), *helpers_[i]->getMethod(), helpers_[i]->getEndCriteria(), helpers_[i]->getWeights(), helpers_[i]->getFixParameters());//cambiare valori storati
+			}
+			this->value();//set the error
+		}
+
+		return value_;
+	}
+
+	void GlobalError::value(void) const{
+		Real value_ = 0;
+		Array values;
+		for (Size j = 0; j < helpers_.size(); ++j) {
+			values = helpers_[j]->calibratedModel_->problemValues();
+			for (Size i = 0; i < values.size(); ++i) {
+				value_ += values[i] * values[i];
+			}
+		}
+		
+	};
 }
 
 

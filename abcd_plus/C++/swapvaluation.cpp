@@ -1922,6 +1922,10 @@ int main(int, char*[]) {
 
 	**********************/
 
+	//save guesses
+	params1 = tenorBasisAcdt1->params(); //get parameters
+	params2 = tenorBasisAcdt2->params(); //get parameters
+
 	//calibration
 	//GM.calibrate(helperVec, *LevTot, endCriteria, weightsTot, fixPara);
 	GM.calibrate();
@@ -1961,7 +1965,7 @@ int main(int, char*[]) {
 	std::cout << "c=" << acdt2[2] << std::endl;
 	std::cout << "d=" << acdt2[3] << std::endl;
 	std::cout << "t=" << t_3 << std::endl;
-	std::cout << "Implied b=" <<b(acdt2) << std::endl;
+	std::cout << "Implied b=" << b(acdt2) << std::endl;
 
 	std::cout << std::endl;
 
@@ -1981,8 +1985,9 @@ int main(int, char*[]) {
 	t_3 = t(acdt2_);
 	//t_2 = t(abcd_);
 
+	std::cout << "Global Model" << std::endl;std::cout << std::endl;
 
-	std::cout << "Calibrated acdt EUR3M vs Eonia" << std::endl;std::cout << std::endl;
+	std::cout << "Calibrated acdt EUR3M vs Eonia " << std::endl;std::cout << std::endl;
 	std::cout << "a=" << acdt1_[0] << std::endl;
 	std::cout << "b=" << acdt1_[1] << std::endl;
 	std::cout << "c=" << acdt1_[2] << std::endl;
@@ -2003,6 +2008,65 @@ int main(int, char*[]) {
 
 	std::cout << std::endl;
 
+
+	/*********************
+
+	* Global Error*
+
+	**********************/
+
+
+	Real accuracy = 0.00001;
+	Real min = -0.5;//should we make these variables? These bounds are quite random
+	Real max = 0.5;
+
+
+	//set same guess as with the global model
+	tenorBasisAcdt1->setParams(params1);
+	tenorBasisAcdt2->setParams(params2);
+
+	std::cout << "a=" << helperVec[0]->calibratedModel_->params() << std::endl;
+	std::cout << "b=" << helperVec[1]->calibratedModel_->params() << std::endl;
+
+	GlobalError GE(helperVec,
+		position,
+		innerError,
+		accuracy,
+		min,
+		max);
+
+	//set solver and it solves
+	Real guess = params1[position[0]];
+	Brent solver;
+	Real Result=solver.template solve<GlobalError>(GE, accuracy, guess, min, max);
+
+
+	// get the outputs
+	acdt1_ = tenorBasisAcdt1->instCoefficients();
+	acdt2_ = tenorBasisAcdt2->instCoefficients();
+
+	std::cout << "Solver" << std::endl;std::cout << std::endl;
+
+	std::cout << "Calibrated acdt EUR3M vs Eonia " << std::endl;std::cout << std::endl;
+	std::cout << "a=" << acdt1_[0] << std::endl;
+	std::cout << "b=" << acdt1_[1] << std::endl;
+	std::cout << "c=" << acdt1_[2] << std::endl;
+	std::cout << "d=" << acdt1_[3] << std::endl;
+	std::cout << "Implied t=" << t_1 << std::endl;
+	std::cout << "error=" << error(tenorBasisAcdt1->problemValues()) << std::endl;
+
+	std::cout << std::endl;
+
+	std::cout << "Calibrated acdt EUR3M+ vs Eonia " << std::endl;std::cout << std::endl;
+
+	std::cout << "a=" << acdt2_[0] << std::endl;
+	std::cout << "b=" << acdt2_[1] << std::endl;
+	std::cout << "c=" << acdt2_[2] << std::endl;
+	std::cout << "d=" << acdt2_[3] << std::endl;
+	std::cout << "Implied t=" << t_3 << std::endl;
+	std::cout << "error=" << error(tenorBasisAcdt2->problemValues()) << std::endl;
+
+	std::cout << std::endl;
 
 	/*std::cout << "Calibrated abcd EUR3M vs Eonia" << std::endl;std::cout << std::endl;
 
