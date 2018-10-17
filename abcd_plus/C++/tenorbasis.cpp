@@ -883,6 +883,7 @@ namespace QuantLib {
 			guess = params[position_[index]];
 			Brent solver;
 			solver.solve(*this, accuracy_, guess, min_, max_);
+			innerErrorNumber_++;
 		}
 		else
 		{
