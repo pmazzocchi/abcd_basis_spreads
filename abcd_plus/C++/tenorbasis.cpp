@@ -703,7 +703,7 @@ namespace QuantLib {
 	};
 
 
-	GlobalHelper::GlobalHelper(const boost::shared_ptr<TenorBasis>& calibratedModel,//real natture
+	GlobalHelper::GlobalHelper(const boost::shared_ptr<TenorBasis>& calibratedModel,
 		const std::vector<boost::shared_ptr<RateHelper>> & helpers,
 		boost::shared_ptr<OptimizationMethod> & method,
 		const EndCriteria & endCriteria,
@@ -723,7 +723,7 @@ namespace QuantLib {
 		Array values = calibratedModel_->problemValues();
 		Real value = 0;
 		for (Size i = 0; i < values.size(); ++i) {
-			value += values[i] * values[i];
+			value += values[i]* values[i]* weights_[i];
 		}
 		return value;
 	};

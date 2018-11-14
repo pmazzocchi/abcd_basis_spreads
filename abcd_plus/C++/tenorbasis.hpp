@@ -362,13 +362,14 @@ namespace QuantLib {
 			const std::vector<Real> & weights,
 			const std::vector<bool> & fixParameters);
 
-		Real calibrationError()const;//real nature
-		boost::shared_ptr<TenorBasis> calibratedModel_;
+		Real calibrationError()const;
 		std::vector<boost::shared_ptr<RateHelper>>& getHelpers();
 		boost::shared_ptr<OptimizationMethod>& getMethod();
 		EndCriteria& getEndCriteria();
 		std::vector<Real>& getWeights();
 		std::vector<bool>& getFixParameters();
+
+		boost::shared_ptr<TenorBasis> calibratedModel_;
 	protected:
 
 		std::vector<boost::shared_ptr<RateHelper>> helpers_;
@@ -376,8 +377,6 @@ namespace QuantLib {
 		EndCriteria endCriteria_;
 		std::vector<Real> weights_;
 		std::vector<bool> fixParameters_;
-
-
 
 	};
 
