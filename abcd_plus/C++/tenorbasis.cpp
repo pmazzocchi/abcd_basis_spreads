@@ -745,23 +745,45 @@ namespace QuantLib {
 	};
 
 	//global model
+	/*
 	GlobalModel::GlobalModel(Size nArguments,
-		const Real& coeff,
+	const Real& coeff,
+	const std::vector<boost::shared_ptr<GlobalHelper>> & helpers,
+	const std::vector<int>& position,
+	const int& innerErrorNumber,
+	boost::shared_ptr<OptimizationMethod>& method,//not sure that this objects should be stored
+	const EndCriteria& endCriteria,
+	const std::vector<Real>& weights,
+	const std::vector<bool>& fixParameters)
+	: CalibratedModel(nArguments), helpers_(helpers), position_(position),
+	innerErrorNumber_(innerErrorNumber), method_(method),
+	endCriteria_(endCriteria), weights_(weights), fixParameters_(fixParameters) {
+	Real y = coeff;
+	arguments_[0] = ConstantParameter(y, NoConstraint());
+	//generateArguments();
+	}
+	*/
+
+	GlobalModel::GlobalModel(Size nArguments,
+		const std::vector<Real>& coeff,
 		const std::vector<boost::shared_ptr<GlobalHelper>> & helpers,
 		const std::vector<int>& position,
-		const int& innerErrorNumber,
-		boost::shared_ptr<OptimizationMethod>& method,//not sure that this objects should be stored
+		boost::shared_ptr<OptimizationMethod> & method,
 		const EndCriteria& endCriteria,
 		const std::vector<Real>& weights,
 		const std::vector<bool>& fixParameters)
-		: CalibratedModel(nArguments), helpers_(helpers), position_(position),
-		innerErrorNumber_(innerErrorNumber), method_(method),
+		: CalibratedModel(nArguments), helpers_(helpers), position_(position), method_(method),
 		endCriteria_(endCriteria), weights_(weights), fixParameters_(fixParameters) {
-		Real y = coeff;
-		arguments_[0] = ConstantParameter(y, NoConstraint());
-		//generateArguments();
+		std::vector<Real> y = coeff;
+
+		for (Size i = 0; i < coeff.size(); ++i) {
+			arguments_[i] = ConstantParameter(y[i], NoConstraint());
+		}
+
+		generateArguments();
 	}
 
+	/*
 	void GlobalModel::generateArguments() {
 
 		Real x;
@@ -793,32 +815,52 @@ namespace QuantLib {
 			//x = params[position_[index]]; // set parameters of interest
 			//Real coeff = x;
 			//Therefore, create an inner model
-			/*GlobalModel globalModel(size,
-				coeff,
-				helpers_,
-				position_,
-				innerErrorNumber_,
-				method_,
-				endCriteria_,
-				weights_,
-				fixParameters_);
-			globalModel.calibrate(helpers_,
-				*method_,
-				endCriteria_,
-				weights_,
-				fixParameters_);*/
+			//GlobalModel globalModel(size,
+			//	coeff,
+			//	helpers_,
+			//	position_,
+			//	innerErrorNumber_,
+			//	method_,
+			//	endCriteria_,
+			//	weights_,
+			//	fixParameters_);
+			//globalModel.calibrate(helpers_,
+			//	*method_,
+			//	endCriteria_,
+			//	weights_,
+			//	fixParameters_);
+			//	this->calibrate(helpers_,
+			//		*method_,
+			//		endCriteria_,
+			//		weights_,
+			//		fixParameters_);
+	this->calibrate();
+	//in order to cycle once more
+	innerErrorNumber_++;
+	arguments_[0].setParam(0, x);
+	//index = position_.size() + innerErrorNumber_;
 
-				/*this->calibrate(helpers_,
-					*method_,
-					endCriteria_,
-					weights_,
-					fixParameters_);*/
-			this->calibrate();
-			//in order to cycle once more
-			innerErrorNumber_++;
-			arguments_[0].setParam(0, x);
-			//index = position_.size() + innerErrorNumber_;
+		}
 
+
+	}; */
+	void GlobalModel::generateArguments() {
+
+		std::vector<Real> x(position_.size());
+
+		for (Size i = 0; i < x.size(); ++i) {
+			x[i] = arguments_[i](0.0);
+		}
+
+
+		for (Size j = 0; j < position_.size(); ++j) {
+			{
+				for (Size i = 0; i < helpers_.size(); ++i) {
+					Array params = helpers_[i]->calibratedModel_->params(); //get parameters
+					params[position_[j]] = x[j]; // set parameters of interest
+					helpers_[i]->calibratedModel_->setParams(params);// change model parameters
+				}
+			}
 		}
 
 

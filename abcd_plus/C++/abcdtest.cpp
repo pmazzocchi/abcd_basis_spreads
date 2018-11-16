@@ -1887,9 +1887,10 @@ int main(int, char*[]) {
 
 	//Guess
 	//a
-	QuantLib::Real coef = params2[0];//a guess, will be changed from the external model and internally fixed
+	std::vector<Real> coef(1);
+	coef[0] = params2[0];//a guess, will be changed from the external model and internally fixed
 	//c
-	//QuantLib::Real coef = params2[1];//a guess, will be changed from the external model and internally fixed
+	
 
 	//Position to manage: because we are fixing just 1 value the length of position is 1, and because the parameters is the first the value asisgned is 0
 
@@ -1898,8 +1899,6 @@ int main(int, char*[]) {
 	//position.push_back(1);//c
 
 	//Number of inner global error: just one because we are fixing  just 1 
-
-	int innerError = 1;
 
 	//the parameter needs to be changed by the model, therefore: false
 	std::vector<bool> fixPara;
@@ -1912,7 +1911,7 @@ int main(int, char*[]) {
 
 
 	//building
-	GlobalModel GM(s, coef, helperVec, position, innerError, LevTot, endCriteria, weightsTot, fixPara);
+	GlobalModel GM(s, coef, helperVec, position, LevTot, endCriteria, weightsTot, fixPara);
 
 
 
@@ -2013,9 +2012,6 @@ int main(int, char*[]) {
 
 	* Global Error*
 
-	**********************/
-
-
 	Real accuracy = 0.00001;
 	Real min = -0.5;//should we make these variables? These bounds are quite random
 	Real max = 0.5;
@@ -2068,7 +2064,7 @@ int main(int, char*[]) {
 
 	std::cout << std::endl;
 
-	/*std::cout << "Calibrated abcd EUR3M vs Eonia" << std::endl;std::cout << std::endl;
+	std::cout << "Calibrated abcd EUR3M vs Eonia" << std::endl;std::cout << std::endl;
 
 	std::cout << "a=" << abcd_[0] << std::endl;
 	std::cout << "b=" << abcd_[1] << std::endl;
@@ -2076,12 +2072,12 @@ int main(int, char*[]) {
 	std::cout << "d=" << abcd_[3] << std::endl;
 	std::cout << "Implied t=" << t_2 << std::endl;
 
-	std::cout << std::endl;*/
+	std::cout << std::endl;
 
 	std::cout << "'a' is the same for each model" << std::endl;
 
 	std::cout << std::endl;
-
+	*/
 
 	/*********************
 
@@ -2124,11 +2120,11 @@ int main(int, char*[]) {
 
 	//Number of parameters: 1
 
-	s = 1;
+	s = 2;
 
 	//Guess
 
-	coef = acdt1_[0];//a guess, will be changed from the external model and internally fixed
+	coef.push_back(acdt1_[0]);//a guess, will be changed from the external model and internally fixed
 	//Note: c guess has been fixed in the acdtmodel and will be the selected one up to the inner calibrator will change it.
 
 	//Position: add a new position for c
@@ -2138,11 +2134,9 @@ int main(int, char*[]) {
 
 	//double errror
 
-	innerError = 2;
-
 	//boost::shared_ptr<GlobalModel> GM(new GlobalModel(s, coef, helperVec_, position, innerError, LevTot, endCriteria, weightsTot, fixPara));
-
-	GlobalModel GM2(s, coef, helperVec_, position, innerError, LevTot, endCriteria, weightsTot, fixPara);
+	fixPara.push_back(false);
+	GlobalModel GM2(s, coef, helperVec_, position, LevTot, endCriteria, weightsTot, fixPara);
 
 
 	// retrieving t_max ( note: also for acdt basis coefficients are abcd)

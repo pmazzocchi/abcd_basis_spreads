@@ -351,7 +351,6 @@ namespace QuantLib {
 		std::vector<Real> coeffAbcd(std::vector<Real> coeff);
 	};
 
-
 	class GlobalHelper : public CalibrationHelperBase {
 
 	public:
@@ -380,8 +379,40 @@ namespace QuantLib {
 
 	};
 
+	class GlobalModel : public CalibratedModel {
 
+	public:
+		GlobalModel(Size nArguments,
+			const std::vector<Real>& coeff,
+			const std::vector<boost::shared_ptr<GlobalHelper>> & helpers,
+			const std::vector<int>& position,
+			boost::shared_ptr<OptimizationMethod> & method,
+			const EndCriteria& endCriteria,
+			const std::vector<Real>& weights,
+			const std::vector<bool>& fixParameters);
 
+		void generateArguments();
+		virtual Constraint constraint() const;
+		void calibrate(
+			const std::vector<boost::shared_ptr<GlobalHelper>>& helpers,
+			OptimizationMethod& method,
+			const EndCriteria& endCriteria,
+			const std::vector<Real>& weights,
+			const std::vector<bool>& fixParameters);
+		void calibrate();
+
+	protected:
+
+		std::vector<int> position_;
+		std::vector<boost::shared_ptr<GlobalHelper>> helpers_;
+		boost::shared_ptr<OptimizationMethod> method_;
+		EndCriteria endCriteria_;
+		std::vector<Real> weights_;
+		std::vector<bool> fixParameters_;
+
+	};
+
+/*
 	class GlobalModel : public CalibratedModel {
 
 	public:
@@ -417,6 +448,7 @@ namespace QuantLib {
 		std::vector<bool> fixParameters_;
 
 	};
+*/
 
 	class GlobalError {
 	public:
