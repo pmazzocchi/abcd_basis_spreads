@@ -1911,7 +1911,7 @@ int main(int, char*[]) {
 
 
 	//building
-	GlobalModel GM(s, coef, helperVec, position, LevTot, endCriteria, weightsTot, fixPara);
+	GlobalModel GM(s, coef, helperVec, position);
 
 
 
@@ -1927,7 +1927,7 @@ int main(int, char*[]) {
 
 	//calibration
 	//GM.calibrate(helperVec, *LevTot, endCriteria, weightsTot, fixPara);
-	GM.calibrate();
+	GM.calibrate(*LevTot, endCriteria, weightsTot, fixPara);
 	//outputs
 
 	std::vector<Real> acdt1_;
@@ -2136,7 +2136,7 @@ int main(int, char*[]) {
 
 	//boost::shared_ptr<GlobalModel> GM(new GlobalModel(s, coef, helperVec_, position, innerError, LevTot, endCriteria, weightsTot, fixPara));
 	fixPara.push_back(false);
-	GlobalModel GM2(s, coef, helperVec_, position, LevTot, endCriteria, weightsTot, fixPara);
+	GlobalModel GM2(s, coef, helperVec_, position);
 
 
 	// retrieving t_max ( note: also for acdt basis coefficients are abcd)
@@ -2167,7 +2167,7 @@ int main(int, char*[]) {
 
 	//calibration
 	//GM2.calibrate(helperVec, *LevTot, endCriteria, weightsTot, fixPara);
-	GM2.calibrate();
+	GM2.calibrate(*LevTot, endCriteria, weightsTot, fixPara);
 	//inst basis coefficients
 	acdt1_ = tenorBasisAcdt1->instCoefficients();
 	acdt2_ = tenorBasisAcdt2->instCoefficients();

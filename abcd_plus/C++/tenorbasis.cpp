@@ -767,13 +767,13 @@ namespace QuantLib {
 	GlobalModel::GlobalModel(Size nArguments,
 		const std::vector<Real>& coeff,
 		const std::vector<boost::shared_ptr<GlobalHelper>> & helpers,
-		const std::vector<int>& position,
-		boost::shared_ptr<OptimizationMethod> & method,
+		const std::vector<int>& position
+		/*boost::shared_ptr<OptimizationMethod> & method,
 		const EndCriteria& endCriteria,
 		const std::vector<Real>& weights,
-		const std::vector<bool>& fixParameters)
-		: CalibratedModel(nArguments), helpers_(helpers), position_(position), method_(method),
-		endCriteria_(endCriteria), weights_(weights), fixParameters_(fixParameters) {
+		const std::vector<bool>& fixParameters*/)
+		: CalibratedModel(nArguments), helpers_(helpers), position_(position)/*, method_(method),
+		endCriteria_(endCriteria), weights_(weights), fixParameters_(fixParameters)*/ {
 		std::vector<Real> y = coeff;
 
 		for (Size i = 0; i < coeff.size(); ++i) {
@@ -867,6 +867,23 @@ namespace QuantLib {
 	};
 
 	void GlobalModel::calibrate(
+		OptimizationMethod& method,
+		const EndCriteria& endCriteria,
+		const std::vector<Real>& weights,
+		const std::vector<bool>& fixParameters) {
+
+		std::vector<boost::shared_ptr<CalibrationHelperBase>> cHelpers(helpers_.size());
+
+		for (Size i = 0; i < helpers_.size(); ++i) {
+			cHelpers[i] = helpers_[i];
+		}
+		CalibratedModel::calibrate(cHelpers, method, endCriteria,
+			this->constraint(), weights, fixParameters);
+	};
+
+	/*
+
+	void GlobalModel::calibrate(
 		const std::vector<boost::shared_ptr<GlobalHelper>>& helpers,
 		OptimizationMethod& method,
 		const EndCriteria& endCriteria,
@@ -892,7 +909,7 @@ namespace QuantLib {
 		CalibratedModel::calibrate(cHelpers, *method_, endCriteria_,
 			this->constraint(), weights_, fixParameters_);
 	};
-
+	*/
 
 	Constraint GlobalModel::constraint() const {
 		return NoConstraint();

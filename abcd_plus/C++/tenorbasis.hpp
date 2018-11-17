@@ -385,30 +385,38 @@ namespace QuantLib {
 		GlobalModel(Size nArguments,
 			const std::vector<Real>& coeff,
 			const std::vector<boost::shared_ptr<GlobalHelper>> & helpers,
-			const std::vector<int>& position,
-			boost::shared_ptr<OptimizationMethod> & method,
+			const std::vector<int>& position
+			/*boost::shared_ptr<OptimizationMethod> & method,
 			const EndCriteria& endCriteria,
 			const std::vector<Real>& weights,
-			const std::vector<bool>& fixParameters);
+			const std::vector<bool>& fixParameters*/);
 
 		void generateArguments();
 		virtual Constraint constraint() const;
+
+		void calibrate(
+			OptimizationMethod& method,
+			const EndCriteria& endCriteria,
+			const std::vector<Real>& weights,
+			const std::vector<bool>& fixParameters);
+		/*
 		void calibrate(
 			const std::vector<boost::shared_ptr<GlobalHelper>>& helpers,
 			OptimizationMethod& method,
 			const EndCriteria& endCriteria,
 			const std::vector<Real>& weights,
 			const std::vector<bool>& fixParameters);
-		void calibrate();
 
+		void calibrate();
+		*/
 	protected:
 
 		std::vector<int> position_;
 		std::vector<boost::shared_ptr<GlobalHelper>> helpers_;
-		boost::shared_ptr<OptimizationMethod> method_;
+		/*boost::shared_ptr<OptimizationMethod> method_;
 		EndCriteria endCriteria_;
 		std::vector<Real> weights_;
-		std::vector<bool> fixParameters_;
+		std::vector<bool> fixParameters_;*/
 
 	};
 
